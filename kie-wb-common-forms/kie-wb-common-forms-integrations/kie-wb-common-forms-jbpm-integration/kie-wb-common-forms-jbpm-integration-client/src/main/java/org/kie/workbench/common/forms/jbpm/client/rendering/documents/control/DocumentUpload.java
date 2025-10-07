@@ -61,6 +61,7 @@ public class DocumentUpload implements DocumentUploadView.Presenter,
 
     private boolean enabled = true;
     private int maxDocuments = -1;
+    private String allowedExtensions;
 
     @Inject
     public DocumentUpload(final DocumentUploadManager uploader, final DocumentUploadView view, final ManagedInstance<DocumentPreview> instance, final TranslationService translationService) {
@@ -109,16 +110,19 @@ public class DocumentUpload implements DocumentUploadView.Presenter,
                 handler.notifyStateChange(DocumentPreviewState.ERROR);
             }
         };
+        final ParameterizedCommand<String> onValidationError = errorMessage -> {
+            preview.setState(DocumentPreviewState.ERROR, errorMessage);
+        };
 
         DocumentPreviewStateAction retryAction = new DocumentPreviewStateAction(translationService.getTranslation(Constants.DocumentUploadViewImplRetry), () -> {
-            uploader.remove(document.getId(), () -> uploader.upload(document.getId(), file, startUploadCallback, onFinishUpload));
+            uploader.remove(document.getId(), () -> uploader.upload(document.getId(), file, startUploadCallback, onFinishUpload, allowedExtensions, onValidationError));
         });
 
         handler.addStateActions(DocumentPreviewState.ERROR, Arrays.asList(removeAction, retryAction));
 
         preview.setStateHandler(handler);
 
-        uploader.upload(document.getId(), file, startUploadCallback, onFinishUpload);
+        uploader.upload(document.getId(), file, startUploadCallback, onFinishUpload, allowedExtensions, onValidationError);
 
         ValueChangeEvent.fire(DocumentUpload.this, getValue());
     }
@@ -154,6 +158,10 @@ public class DocumentUpload implements DocumentUploadView.Presenter,
         } else {
             view.setMaxDocuments("");
         }
+    }
+
+    public void setAllowedExtensions(String allowedExtensions) {
+        this.allowedExtensions = allowedExtensions;
     }
 
     @Override

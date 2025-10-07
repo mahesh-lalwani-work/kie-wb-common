@@ -16,9 +16,12 @@
 
 package org.kie.workbench.common.forms.jbpm.model.authoring.document.definition;
 
+import java.util.Objects;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormDefinition;
+import org.kie.workbench.common.forms.adf.definitions.annotations.FormField;
 import org.kie.workbench.common.forms.adf.definitions.annotations.i18n.I18nSettings;
 import org.kie.workbench.common.forms.fields.shared.AbstractFieldDefinition;
 import org.kie.workbench.common.forms.jbpm.model.authoring.document.type.DocumentFieldType;
@@ -34,8 +37,23 @@ public class DocumentFieldDefinition extends AbstractFieldDefinition {
 
     public static final DocumentFieldType FIELD_TYPE = new DocumentFieldType();
 
+    @FormField(
+            labelKey = "enabledFileExtensions",
+            helpMessageKey = "enabledFileExtensions.helpMessage",
+            afterElement = "label"
+    )
+    private String enabledFileExtensions;
+
     public DocumentFieldDefinition() {
         super("org.jbpm.document.service.impl.DocumentImpl");
+    }
+
+    public String getEnabledFileExtensions() {
+        return enabledFileExtensions;
+    }
+
+    public void setEnabledFileExtensions(String enabledFileExtensions) {
+        this.enabledFileExtensions = enabledFileExtensions;
     }
 
     @Override
@@ -45,6 +63,30 @@ public class DocumentFieldDefinition extends AbstractFieldDefinition {
 
     @Override
     protected void doCopyFrom(FieldDefinition other) {
+        if (other instanceof DocumentFieldDefinition) {
+            this.enabledFileExtensions = ((DocumentFieldDefinition) other).enabledFileExtensions;
+        }
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        DocumentFieldDefinition that = (DocumentFieldDefinition) o;
+        return Objects.equals(enabledFileExtensions, that.enabledFileExtensions);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (enabledFileExtensions != null ? enabledFileExtensions.hashCode() : 0);
+        return result;
     }
 }
