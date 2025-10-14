@@ -77,6 +77,11 @@ public class DocumentPreviewViewImpl implements DocumentPreviewView,
 
     @Override
     public void setState(DocumentPreviewState previewState, Collection<DocumentPreviewStateAction> previewActions) {
+        setState(previewState, previewActions, null);
+    }
+
+    @Override
+    public void setState(DocumentPreviewState previewState, Collection<DocumentPreviewStateAction> previewActions, String errorMessage) {
 
         state.className = resolveStateStyle(previewState);
 
@@ -88,6 +93,15 @@ public class DocumentPreviewViewImpl implements DocumentPreviewView,
             document.classList.add(DISABLED_ANCHOR_STYLE);
             document.removeAttribute("href");
             document.removeAttribute("download");
+        }
+
+        // Show error message if provided and state is ERROR
+        if (previewState.equals(DocumentPreviewState.ERROR) && errorMessage != null && !errorMessage.trim().isEmpty()) {
+            document.title = errorMessage; // Use tooltip to show error message
+            document.style.color = "red";
+        } else {
+            document.removeAttribute("title");
+            document.style.color = "";
         }
 
         clearActions();

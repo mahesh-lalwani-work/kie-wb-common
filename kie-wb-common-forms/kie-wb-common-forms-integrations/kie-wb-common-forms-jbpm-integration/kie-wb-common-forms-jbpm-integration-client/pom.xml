@@ -131,6 +131,12 @@
       <artifactId>kie-wb-common-forms-jbpm-integration-api</artifactId>
     </dependency>
 
+    <!-- jBPM Workbench Common for ManagePreferences -->
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-wb-common-client</artifactId>
+    </dependency>
+
     <!-- test -->
     <dependency>
       <groupId>com.google.gwt.gwtmockito</groupId>

@@ -44,6 +44,13 @@ public class DocumentCollectionFieldDefinition extends AbstractFieldDefinition {
     )
     private Integer maxDocuments = 0;
 
+    @FormField(
+            labelKey = "enabledFileExtensions",
+            helpMessageKey = "enabledFileExtensions.helpMessage",
+            afterElement = "maxDocuments"
+    )
+    private String enabledFileExtensions;
+
     public DocumentCollectionFieldDefinition() {
         super(DocumentCollectionFieldType.DOCUMENT_COLLECTION_TYPE);
     }
@@ -56,6 +63,14 @@ public class DocumentCollectionFieldDefinition extends AbstractFieldDefinition {
         this.maxDocuments = maxDocuments;
     }
 
+    public String getEnabledFileExtensions() {
+        return enabledFileExtensions;
+    }
+
+    public void setEnabledFileExtensions(String enabledFileExtensions) {
+        this.enabledFileExtensions = enabledFileExtensions;
+    }
+
     @Override
     public DocumentCollectionFieldType getFieldType() {
         return FIELD_TYPE;
@@ -63,8 +78,10 @@ public class DocumentCollectionFieldDefinition extends AbstractFieldDefinition {
 
     @Override
     protected void doCopyFrom(FieldDefinition other) {
-        if(other instanceof DocumentCollectionFieldDefinition) {
-            this.maxDocuments = ((DocumentCollectionFieldDefinition)other).maxDocuments;
+        if (other instanceof DocumentCollectionFieldDefinition) {
+            DocumentCollectionFieldDefinition otherDoc = (DocumentCollectionFieldDefinition) other;
+            this.maxDocuments = otherDoc.maxDocuments;
+            this.enabledFileExtensions = otherDoc.enabledFileExtensions;
         }
     }
 
@@ -80,14 +97,15 @@ public class DocumentCollectionFieldDefinition extends AbstractFieldDefinition {
             return false;
         }
         DocumentCollectionFieldDefinition that = (DocumentCollectionFieldDefinition) o;
-        return Objects.equals(maxDocuments, that.maxDocuments);
+        return Objects.equals(maxDocuments, that.maxDocuments) &&
+                Objects.equals(enabledFileExtensions, that.enabledFileExtensions);
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = ~~result;
         result = 31 * result + (maxDocuments != null ? maxDocuments.hashCode() : 0);
+        result = 31 * result + (enabledFileExtensions != null ? enabledFileExtensions.hashCode() : 0);
         return result;
     }
 }

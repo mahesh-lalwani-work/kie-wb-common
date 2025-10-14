@@ -26,6 +26,8 @@ public interface DocumentPreviewView extends UberElemental<DocumentPreviewView.P
 
     void setState(DocumentPreviewState state, Collection<DocumentPreviewStateAction> previewAactions);
 
+    void setState(DocumentPreviewState state, Collection<DocumentPreviewStateAction> previewAactions, String errorMessage);
+
     void clearActions();
 
     interface Presenter {

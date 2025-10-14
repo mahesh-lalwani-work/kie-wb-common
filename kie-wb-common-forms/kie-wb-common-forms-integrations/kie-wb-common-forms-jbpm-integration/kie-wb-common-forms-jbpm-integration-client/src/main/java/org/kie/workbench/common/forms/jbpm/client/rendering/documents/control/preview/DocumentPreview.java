@@ -40,6 +40,7 @@ public class DocumentPreview implements DocumentPreviewView.Presenter,
     private DocumentPreviewState state;
     private DocumentData documentData;
     private DocumentPreviewStateActionsHandler actionsHandler;
+    private String errorMessage;
 
     private boolean enabled = true;
 
@@ -78,6 +79,13 @@ public class DocumentPreview implements DocumentPreviewView.Presenter,
         initState();
     }
 
+    public void setState(DocumentPreviewState state, String errorMessage) {
+        this.state = state;
+        this.errorMessage = errorMessage;
+
+        initState();
+    }
+
     private void initState() {
         Collection<DocumentPreviewStateAction> actions;
 
@@ -86,7 +94,7 @@ public class DocumentPreview implements DocumentPreviewView.Presenter,
         } else {
             actions = Collections.emptyList();
         }
-        view.setState(state, actions);
+        view.setState(state, actions, errorMessage);
     }
 
     public DocumentData getDocumentData() {

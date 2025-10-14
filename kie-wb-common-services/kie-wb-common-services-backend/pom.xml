@@ -515,6 +515,12 @@
       <artifactId>jakarta.ws.rs-api</artifactId>
     </dependency>
 
+    <!-- JBPM Workbench Common API for ManagePreferences -->
+    <dependency>
+      <groupId>org.jbpm</groupId>
+      <artifactId>jbpm-wb-common-api</artifactId>
+    </dependency>
+
   </dependencies>
 
 </project>

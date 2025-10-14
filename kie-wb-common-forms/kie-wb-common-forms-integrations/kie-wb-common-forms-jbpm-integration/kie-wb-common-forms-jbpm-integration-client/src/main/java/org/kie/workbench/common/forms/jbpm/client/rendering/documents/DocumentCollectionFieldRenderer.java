@@ -62,6 +62,7 @@ public class DocumentCollectionFieldRenderer extends FieldRenderer<DocumentColle
 
         formGroup.render(upload.asWidget(), field);
         upload.setMaxDocuments(field.getMaxDocuments());
+        upload.setAllowedExtensions(field.getEnabledFileExtensions());
 
         return formGroup;
     }
@@ -104,12 +105,84 @@ public class DocumentCollectionFieldRenderer extends FieldRenderer<DocumentColle
 
             return ValidationResult.valid();
         };
+        CustomFieldValidator<List<DocumentData>> fileExtensionValidator = values -> {
+            String allowedExtensions = getField().getEnabledFileExtensions();
+            
+            // Only validate if allowedExtensions is configured
+            if (allowedExtensions != null && !allowedExtensions.trim().isEmpty()) {
+                if (values != null && !values.isEmpty()) {
+                    for (DocumentData documentData : values) {
+                        if (documentData != null && documentData.getFileName() != null && !documentData.getFileName().trim().isEmpty()) {
+                            if (!isValidFileExtension(documentData.getFileName(), allowedExtensions)) {
+                                String extension = getFileExtension(documentData.getFileName());
+                                String errorMessage = "File extension '" + extension + "' is not in the allowed list: " + allowedExtensions;
+                                return ValidationResult.error(errorMessage);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return ValidationResult.valid();
+        };
+        
         field.getCustomValidators().add(maxContentSizeWarning);
         field.getCustomValidators().add(maxDocumentsError);
+        field.getCustomValidators().add(fileExtensionValidator);
     }
 
     @Override
     public Converter getConverter() {
         return new ListToListConverter();
+    }
+
+    /**
+     * Validates if a file extension is allowed.
+     * 
+     * @param fileName          the name of the file to validate
+     * @param allowedExtensions comma-separated list of allowed extensions
+     * @return true if the file extension is allowed, false otherwise
+     */
+    private boolean isValidFileExtension(String fileName, String allowedExtensions) {
+        if (fileName == null || fileName.trim().isEmpty()) {
+            return false;
+        }
+
+        String extension = getFileExtension(fileName);
+        if (extension == null) {
+            return false;
+        }
+
+        // Basic validation against allowed extensions
+        if (allowedExtensions != null && !allowedExtensions.trim().isEmpty()) {
+            String[] allowedExts = allowedExtensions.split(",");
+            for (String allowedExt : allowedExts) {
+                if (allowedExt.trim().equalsIgnoreCase(extension)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Extracts the file extension from a filename.
+     * 
+     * @param fileName the filename to extract extension from
+     * @return the file extension (lowercase) or null if no valid extension found
+     */
+    private String getFileExtension(String fileName) {
+        if (fileName == null) {
+            return null;
+        }
+
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex == -1 || lastDotIndex == fileName.length() - 1) {
+            return null;
+        }
+
+        return fileName.substring(lastDotIndex + 1).toLowerCase();
     }
 }
