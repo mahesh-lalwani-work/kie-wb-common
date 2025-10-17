@@ -22,6 +22,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.ScriptInjector;
+
 import org.kie.workbench.common.forms.adf.rendering.Renderer;
 import org.kie.workbench.common.forms.dynamic.client.rendering.FieldRenderer;
 import org.kie.workbench.common.forms.dynamic.client.rendering.FormFieldImpl;
@@ -84,9 +86,10 @@ public class DocumentFieldRenderer extends FieldRenderer<DocumentFieldDefinition
     }
 
     @Override
-    protected void registerCustomFieldValidators(FormFieldImpl field) {
+    protected void registerCustomFieldValidators(FormFieldImpl formField) {
+        super.registerCustomFieldValidators(formField);
+        
         CustomFieldValidator<DocumentData> fileExtensionValidator = documentData -> {
-            // Validate if documentData is not null
             if (documentData != null && documentData.getFileName() != null && !documentData.getFileName().trim().isEmpty()) {
                 String allowedExtensions = getField().getEnabledFileExtensions();
                 String source = "form field";
@@ -102,11 +105,8 @@ public class DocumentFieldRenderer extends FieldRenderer<DocumentFieldDefinition
                         }
                     }
                     
-                    // Tier 3: web.xml / Default configuration
-                    // Note: In client-side code, we rely on ManagePreferencesInitializer
-                    // to have loaded the default configuration from server
+                    // Tier 3: Default configuration
                     if (allowedExtensions == null || allowedExtensions.trim().isEmpty()) {
-                        // Try to get the raw configuration which includes defaults
                         String rawConfig = ManagePreferencesConfigService.getRawConfiguration();
                         if (rawConfig != null && !rawConfig.trim().isEmpty()) {
                             allowedExtensions = rawConfig;
@@ -131,7 +131,61 @@ public class DocumentFieldRenderer extends FieldRenderer<DocumentFieldDefinition
             return ValidationResult.valid();
         };
         
-        field.getCustomValidators().add(fileExtensionValidator);
+        formField.getCustomValidators().add(fileExtensionValidator);
+        
+        initializeClientSideValidation();
+    }
+    
+    /**
+     * Initialize client-side validation for the document field.
+     * This method sets up JavaScript validation to provide immediate feedback
+     * to users when they select files with invalid extensions.
+     */
+    private void initializeClientSideValidation() {
+        // Get the allowed extensions for this field
+        String formAllowedExtensions = getField().getEnabledFileExtensions();
+        String globalAllowedExtensions = getGlobalAllowedExtensions();
+        
+        // Create JavaScript code to initialize validation
+        String formExt = formAllowedExtensions != null ? formAllowedExtensions : "";
+        String globalExt = globalAllowedExtensions != null ? globalAllowedExtensions : "";
+        String fieldName = getField().getName();
+        
+        String jsCode = 
+            "if (typeof appformer !== 'undefined' && appformer.forms && appformer.forms.Documents) {" +
+            "  var uploadElement = document.querySelector('[data-field-id=\"" + fieldName + "\"]');" +
+            "  if (uploadElement) {" +
+            "    var documentsUpload = appformer.forms.Documents.get();" +
+            "    documentsUpload.initializeValidation('" + formExt + "', '" + globalExt + "');" +
+            "    documentsUpload.bind(uploadElement);" +
+            "  }" +
+            "}";
+        
+        // Execute the JavaScript code
+        ScriptInjector.fromString(jsCode).inject();
+    }
+    
+    /**
+     * Get global allowed extensions from Manage Preferences or default configuration.
+     * 
+     * @return comma-separated string of global allowed extensions
+     */
+    private String getGlobalAllowedExtensions() {
+        if (ManagePreferencesConfigService.isConfigurationAvailable()) {
+            List<String> managePrefsExtensions = ManagePreferencesConfigService.getAllowedExtensionsList();
+            if (!managePrefsExtensions.isEmpty()) {
+                return String.join(",", managePrefsExtensions);
+            }
+        }
+        
+        // Fallback to default configuration
+        String rawConfig = ManagePreferencesConfigService.getRawConfiguration();
+        if (rawConfig != null && !rawConfig.trim().isEmpty()) {
+            return rawConfig;
+        }
+        
+        // Final fallback to hardcoded defaults
+        return "pdf,docx,xlsx,txt,jpg,png";
     }
 
     /**

@@ -25,8 +25,34 @@ import org.kie.workbench.common.forms.adf.definitions.annotations.FormField;
 import org.kie.workbench.common.forms.adf.definitions.annotations.i18n.I18nSettings;
 import org.kie.workbench.common.forms.fields.shared.AbstractFieldDefinition;
 import org.kie.workbench.common.forms.jbpm.model.authoring.document.type.DocumentFieldType;
+import org.kie.workbench.common.forms.jbpm.model.authoring.document.validation.ValidFileExtensions;
 import org.kie.workbench.common.forms.model.FieldDefinition;
 
+/**
+ * Field definition for Document fields in the Form Designer.
+ * 
+ * <p>This class defines the properties and validation rules for Document fields
+ * that can be added to forms. Document fields allow users to upload files
+ * with specific file type restrictions.
+ * 
+ * <p>Key features:
+ * <ul>
+ *   <li><strong>File type restrictions:</strong> The {@code enabledFileExtensions} field
+ *       allows specifying which file types are allowed for upload</li>
+ *   <li><strong>Validation:</strong> Uses {@link ValidFileExtensions} annotation to ensure
+ *       only valid file extensions are configured</li>
+ *   <li><strong>Form integration:</strong> Integrates with the Form Designer UI for
+ *       property configuration</li>
+ * </ul>
+ * 
+ * <p>The {@code enabledFileExtensions} field accepts comma-separated file extensions
+ * (e.g., "pdf,txt,jpg") and validates them against the allowed list configured
+ * in Manage Preferences.
+ * 
+ * @since 7.74.1
+ * @see ValidFileExtensions
+ * @see org.jbpm.workbench.common.preferences.FileExtensionsValidationUtil
+ */
 @Portable
 @Bindable
 @FormDefinition(
@@ -37,11 +63,26 @@ public class DocumentFieldDefinition extends AbstractFieldDefinition {
 
     public static final DocumentFieldType FIELD_TYPE = new DocumentFieldType();
 
+    /**
+     * Comma-separated list of allowed file extensions for document uploads.
+     * 
+     * <p>This field specifies which file types are allowed when users upload
+     * documents through this field. The value should be a comma-separated list
+     * of file extensions without dots (e.g., "pdf,txt,jpg").
+     * 
+     * <p>If this field is empty or null, the global file type restrictions
+     * from Manage Preferences will be used instead.
+     * 
+     * <p>The validation is performed by the {@link ValidFileExtensions} annotation
+     * which ensures only valid extensions from the allowed list are specified.
+     */
     @FormField(
             labelKey = "enabledFileExtensions",
             helpMessageKey = "enabledFileExtensions.helpMessage",
-            afterElement = "label"
+            afterElement = "label",
+            required = false
     )
+    @ValidFileExtensions
     private String enabledFileExtensions;
 
     public DocumentFieldDefinition() {
