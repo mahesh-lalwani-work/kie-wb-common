@@ -19,9 +19,9 @@ package org.kie.workbench.common.forms.jbpm.client.rendering.document;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.core.client.JsonUtils;
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -34,6 +34,7 @@ import org.gwtbootstrap3.client.ui.gwt.FlowPanel;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.jbpm.workbench.common.preferences.ManagePreferences;
+import org.kie.workbench.common.forms.jbpm.model.authoring.document.definition.DocumentFieldDefinition;
 import org.kie.workbench.common.forms.jbpm.model.document.DocumentData;
 import org.kie.workbench.common.forms.jbpm.model.document.DocumentStatus;
 import org.uberfire.ext.widgets.common.client.common.FileUpload;
@@ -123,7 +124,8 @@ public class DocumentFieldRendererViewImpl extends Composite implements Document
         }
         
         // Tier 1: Form field configuration (highest priority)
-        String allowedExtensions = renderer.getField().getEnabledFileExtensions();
+        DocumentFieldDefinition field = renderer.getField();
+        String allowedExtensions = field.getEnabledFileExtensions();
         
         // Tier 2: Manage Preferences (from cached value loaded at init)
         if (allowedExtensions == null || allowedExtensions.trim().isEmpty()) {

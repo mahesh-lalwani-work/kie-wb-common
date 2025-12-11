@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jBPM File Extension Validation Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            background-color: #fafafa;
+            cursor: pointer;
+        }
+        
+        input[type="file"]:hover {
+            border-color: #999;
+        }
+        
+        .upload-area {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background-color: #fafafa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-area:hover {
+            border-color: #999;
+            background-color: #f0f0f0;
+        }
+        
+        .upload-area.dragover {
+            border-color: #2196F3;
+            background-color: #e3f2fd;
+        }
+        
+        .file-extension-error {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+            padding: 4px 8px;
+            background-color: #ffebee;
+            border: 1px solid #d32f2f;
+            border-radius: 4px;
+        }
+        
+        .file-extension-warning {
+            color: #f57c00;
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+            padding: 4px 8px;
+            background-color: #fff3e0;
+            border: 1px solid #f57c00;
+            border-radius: 4px;
+        }
+        
+        .document-upload-error {
+            color: #d32f2f;
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+            padding: 4px 8px;
+            background-color: #ffebee;
+            border: 1px solid #d32f2f;
+            border-radius: 4px;
+        }
+        
+        .info-box {
+            background-color: #e3f2fd;
+            border: 1px solid #2196F3;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h3 {
+            margin-top: 0;
+            color: #1976D2;
+        }
+        
+        .test-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        button {
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        
+        button:hover {
+            background-color: #1976D2;
+        }
+        
+        .file-list {
+            margin-top: 15px;
+        }
+        
+        .file-item {
+            padding: 8px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-item.valid {
+            background-color: #e8f5e8;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .file-item.invalid {
+            background-color: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>jBPM File Extension Validation Demo</h1>
+        
+        <div class="info-box">
+            <h3>Demo Instructions</h3>
+            <p>This demo shows the enhanced client-side file extension validation for jBPM document uploads.</p>
+            <ul>
+                <li><strong>Allowed file types:</strong> PDF, DOCX, XLSX, TXT, JPG, PNG</li>
+                <li><strong>Try uploading:</strong> Valid files (like .pdf, .docx) and invalid files (like .exe, .bat)</li>
+                <li><strong>Features:</strong> Real-time validation, drag & drop support, user-friendly error messages</li>
+            </ul>
+        </div>
+        
+        <div class="form-group">
+            <label for="fileInput">Single File Upload:</label>
+            <input type="file" id="fileInput" accept=".pdf,.docx,.xlsx,.txt,.jpg,.png">
+        </div>
+        
+        <div class="form-group">
+            <label>Multiple File Upload (Drag & Drop):</label>
+            <div class="upload-area" id="uploadArea">
+                <p>Drag and drop files here or click to select</p>
+                <p><small>Allowed types: PDF, DOCX, XLSX, TXT, JPG, PNG</small></p>
+            </div>
+            <input type="file" id="multiFileInput" multiple style="display: none;">
+        </div>
+        
+        <div class="test-buttons">
+            <button onclick="testValidFiles()">Test Valid Files</button>
+            <button onclick="testInvalidFiles()">Test Invalid Files</button>
+            <button onclick="clearResults()">Clear Results</button>
+        </div>
+        
+        <div id="fileList" class="file-list"></div>
+    </div>
+
+    <!-- Include the validation scripts -->
+    <script src="file-extension-validator.js"></script>
+    <script src="upload.js"></script>
+    
+    <script>
+        // Initialize the demo
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDemo();
+        });
+        
+        function initializeDemo() {
+            // Initialize single file validation
+            var singleFileInput = document.getElementById('fileInput');
+            var singleValidator = appformer.forms.FileExtensionValidator.create('pdf,docx,xlsx,txt,jpg,png', '');
+            singleValidator.addRealTimeValidation(singleFileInput);
+            
+            // Initialize multiple file upload with drag & drop
+            var uploadArea = document.getElementById('uploadArea');
+            var multiFileInput = document.getElementById('multiFileInput');
+            var multiValidator = appformer.forms.FileExtensionValidator.create('pdf,docx,xlsx,txt,jpg,png', '');
+            
+            // Set up drag and drop
+            uploadArea.addEventListener('click', function() {
+                multiFileInput.click();
+            });
+            
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+            
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                var files = e.dataTransfer.files;
+                handleMultipleFiles(files, multiValidator);
+            });
+            
+            multiFileInput.addEventListener('change', function(e) {
+                var files = e.target.files;
+                handleMultipleFiles(files, multiValidator);
+            });
+        }
+        
+        function handleMultipleFiles(files, validator) {
+            var fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            var fileNames = [];
+            for (var i = 0; i < files.length; i++) {
+                fileNames.push(files[i].name);
+            }
+            
+            var validationResult = validator.validateFiles(fileNames);
+            
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                var fileInfo = document.createElement('span');
+                fileInfo.textContent = file.name + ' (' + formatFileSize(file.size) + ')';
+                
+                var status = document.createElement('span');
+                
+                // Find validation result for this file
+                var fileResult = validationResult.fileResults.find(function(result) {
+                    return result.fileName === file.name;
+                });
+                
+                if (fileResult && fileResult.isValid) {
+                    fileItem.classList.add('valid');
+                    status.textContent = '✓ Valid';
+                    status.style.color = '#4caf50';
+                } else {
+                    fileItem.classList.add('invalid');
+                    status.textContent = '✗ Invalid';
+                    status.style.color = '#f44336';
+                }
+                
+                fileItem.appendChild(fileInfo);
+                fileItem.appendChild(status);
+                fileList.appendChild(fileItem);
+            }
+            
+            // Show overall validation message
+            if (!validationResult.isValid) {
+                var errorDiv = document.createElement('div');
+                errorDiv.className = 'file-extension-error';
+                errorDiv.textContent = validationResult.message;
+                fileList.appendChild(errorDiv);
+            }
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            var k = 1024;
+            var sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            var i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function testValidFiles() {
+            // Simulate uploading valid files
+            var validFiles = [
+                { name: 'document.pdf', size: 1024 },
+                { name: 'spreadsheet.xlsx', size: 2048 },
+                { name: 'image.jpg', size: 512 }
+            ];
+            
+            var validator = appformer.forms.FileExtensionValidator.create('pdf,docx,xlsx,txt,jpg,png', '');
+            var fileNames = validFiles.map(function(f) { return f.name; });
+            var validationResult = validator.validateFiles(fileNames);
+            
+            showTestResults('Valid Files Test', validFiles, validationResult);
+        }
+        
+        function testInvalidFiles() {
+            // Simulate uploading invalid files
+            var invalidFiles = [
+                { name: 'malware.exe', size: 1024 },
+                { name: 'script.bat', size: 512 },
+                { name: 'archive.zip', size: 2048 }
+            ];
+            
+            var validator = appformer.forms.FileExtensionValidator.create('pdf,docx,xlsx,txt,jpg,png', '');
+            var fileNames = invalidFiles.map(function(f) { return f.name; });
+            var validationResult = validator.validateFiles(fileNames);
+            
+            showTestResults('Invalid Files Test', invalidFiles, validationResult);
+        }
+        
+        function showTestResults(testName, files, validationResult) {
+            var fileList = document.getElementById('fileList');
+            fileList.innerHTML = '<h3>' + testName + '</h3>';
+            
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                var fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                
+                var fileInfo = document.createElement('span');
+                fileInfo.textContent = file.name;
+                
+                var status = document.createElement('span');
+                
+                var fileResult = validationResult.fileResults.find(function(result) {
+                    return result.fileName === file.name;
+                });
+                
+                if (fileResult && fileResult.isValid) {
+                    fileItem.classList.add('valid');
+                    status.textContent = '✓ Valid';
+                    status.style.color = '#4caf50';
+                } else {
+                    fileItem.classList.add('invalid');
+                    status.textContent = '✗ Invalid';
+                    status.style.color = '#f44336';
+                }
+                
+                fileItem.appendChild(fileInfo);
+                fileItem.appendChild(status);
+                fileList.appendChild(fileItem);
+            }
+            
+            if (!validationResult.isValid) {
+                var errorDiv = document.createElement('div');
+                errorDiv.className = 'file-extension-error';
+                errorDiv.textContent = validationResult.message;
+                fileList.appendChild(errorDiv);
+            }
+        }
+        
+        function clearResults() {
+            document.getElementById('fileList').innerHTML = '';
+            document.getElementById('fileInput').value = '';
+            document.getElementById('multiFileInput').value = '';
+        }
+    </script>
+</body>
+</html>

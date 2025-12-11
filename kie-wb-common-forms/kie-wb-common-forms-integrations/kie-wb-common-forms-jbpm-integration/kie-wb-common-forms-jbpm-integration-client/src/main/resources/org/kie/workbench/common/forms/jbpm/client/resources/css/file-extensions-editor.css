@@ -1,0 +1,268 @@
+/**
+ * Enhanced File Extensions Editor Styles
+ * 
+ * This CSS file provides styling for the enhanced file extensions editor
+ * in the form designer, including validation states, suggestions, and
+ * user-friendly visual feedback.
+ */
+
+/* Main container styles */
+.file-extensions-editor {
+    margin-bottom: 15px;
+}
+
+.file-extensions-editor .form-group {
+    margin-bottom: 0;
+}
+
+/* Input field styles */
+.file-extensions-editor .form-control {
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    font-size: 14px;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.file-extensions-editor .form-control:focus {
+    border-color: #66afe9;
+    outline: 0;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102,175,233,.6);
+}
+
+/* Validation states */
+.file-extensions-editor .has-success .form-control {
+    border-color: #3c763d;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+.file-extensions-editor .has-success .form-control:focus {
+    border-color: #2b542c;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px #67b168;
+}
+
+.file-extensions-editor .has-error .form-control {
+    border-color: #a94442;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+.file-extensions-editor .has-error .form-control:focus {
+    border-color: #843534;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px #ce8483;
+}
+
+.file-extensions-editor .has-warning .form-control {
+    border-color: #8a6d3b;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+}
+
+.file-extensions-editor .has-warning .form-control:focus {
+    border-color: #66512c;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px #c0a16b;
+}
+
+/* Help block styles */
+.file-extensions-editor .help-block {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    font-size: 12px;
+}
+
+.file-extensions-editor .help-block.text-success {
+    color: #3c763d;
+}
+
+.file-extensions-editor .help-block.text-error {
+    color: #a94442;
+}
+
+.file-extensions-editor .help-block.text-warning {
+    color: #8a6d3b;
+}
+
+/* Suggestions panel styles */
+.file-extensions-suggestions {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border: 1px solid #e5e5e5;
+    border-radius: 4px;
+}
+
+.file-extensions-suggestions .suggestions-label {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.file-extensions-suggestions .btn-group {
+    margin-bottom: 5px;
+}
+
+.file-extensions-suggestions .btn-xs {
+    padding: 2px 6px;
+    font-size: 11px;
+    line-height: 1.5;
+    border-radius: 3px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.file-extensions-suggestions .btn-success {
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+    color: #fff;
+}
+
+.file-extensions-suggestions .btn-success:hover {
+    background-color: #449d44;
+    border-color: #398439;
+}
+
+.file-extensions-suggestions .btn-warning {
+    background-color: #f0ad4e;
+    border-color: #eea236;
+    color: #fff;
+}
+
+.file-extensions-suggestions .btn-warning:hover {
+    background-color: #ec971f;
+    border-color: #d58512;
+}
+
+/* Validation panel styles */
+.file-extensions-validation {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.file-extensions-validation .validation-label {
+    font-weight: bold;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.file-extensions-validation .extension-analysis-item {
+    margin-bottom: 3px;
+    padding: 2px 0;
+}
+
+.file-extensions-validation .extension-analysis-item .inline-block {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.file-extensions-validation .text-success {
+    color: #3c763d;
+}
+
+.file-extensions-validation .text-warning {
+    color: #8a6d3b;
+}
+
+.file-extensions-validation .text-error {
+    color: #a94442;
+}
+
+/* Utility classes */
+.margin-top-10 {
+    margin-top: 10px;
+}
+
+.margin-right-5 {
+    margin-right: 5px;
+}
+
+.margin-bottom-5 {
+    margin-bottom: 5px;
+}
+
+.text-muted {
+    color: #777;
+}
+
+.small {
+    font-size: 11px;
+}
+
+.font-weight-bold {
+    font-weight: bold;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .file-extensions-suggestions .btn-xs {
+        font-size: 10px;
+        padding: 1px 4px;
+    }
+    
+    .file-extensions-validation {
+        font-size: 11px;
+    }
+}
+
+/* Animation for validation state changes */
+.file-extensions-editor .form-control {
+    transition: all 0.3s ease;
+}
+
+.file-extensions-editor .help-block {
+    transition: all 0.3s ease;
+}
+
+/* Focus styles for accessibility */
+.file-extensions-editor .btn:focus {
+    outline: 2px solid #66afe9;
+    outline-offset: 2px;
+}
+
+.file-extensions-editor .form-control:focus {
+    outline: none;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .file-extensions-editor .form-control {
+        border-width: 2px;
+    }
+    
+    .file-extensions-suggestions {
+        border-width: 2px;
+    }
+    
+    .file-extensions-validation {
+        border-width: 2px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .file-extensions-editor .form-control {
+        background-color: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .file-extensions-suggestions {
+        background-color: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .file-extensions-validation {
+        background-color: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .file-extensions-editor .help-block.text-muted {
+        color: #a0aec0;
+    }
+}
